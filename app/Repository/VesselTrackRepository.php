@@ -10,8 +10,6 @@ class VesselTrackRepository
     protected $model;
 
     public function __construct() {
-        // $builder = $db->table('mytable');
-        // $query   = $builder->get();
         $this->model = new VesselTrackModel();
     }
 
@@ -41,5 +39,10 @@ class VesselTrackRepository
         $sql = "BETWEEN `.$startDate.` AND `.$endDate`";
         // return $this->model->db->builder->where(new RawSql($sql))->findAll();
         return $this->model->where('timestamp', $sql)->findAll();
+    }
+
+    public function persist($model)
+    {
+        # code...
     }
 }

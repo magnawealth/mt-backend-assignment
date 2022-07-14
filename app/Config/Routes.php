@@ -41,7 +41,7 @@ $routes->set404Override();
 // $routes->match( ['get', 'post'], 'users/(:num)', 'users/$1');
 // $routes->get('api/vesseltrack?(:segment)', 'VesselTrack::index?$1');
 $routes->get('api/vesseltrack', 'VesselTrack::index');
-$routes->get('api/vesseltrack/filter', 'VesselTrack::getByTimeInterval');
+$routes->get('api/vesseltrack/filter', 'VesselTrack::getByMMSI');
 $routes->post('api/vesseltrack', 'VesselTrack::save');
 
 /*

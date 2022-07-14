@@ -7,7 +7,6 @@ use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\HTTP\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Repository\VesselTrackRepository;
-use Stringable;
 
 class VesselTrack extends ResourceController
 {
@@ -22,14 +21,14 @@ class VesselTrack extends ResourceController
     public function index(): ResponseInterface
     {
         $data = $this->repository->getAll();
-        return $this->respond($data);
+        return ($data) ? $this->respond($data) : $this->failNotFound('No data found');
     }
     
     public function getByMMSI(): ResponseInterface
     {
         $mmsi = $this->request->getVar("mmsi") ? explode(',', $this->request->getVar("mmsi")) : 0;
-        $data = (count($mmsi) >= 1) ? $this->repository->getByMMSI($mmsi) : "Record Not Found";
-        return $this->respond($data);
+        $data = (count($mmsi) >= 1) ? $this->repository->getByMMSI($mmsi) : 'No data found';
+        return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
     }
 
     public function getByPosition(): ResponseInterface
@@ -38,8 +37,8 @@ class VesselTrack extends ResourceController
         $lon = $this->request->getVar("lon") ? $this->request->getVar("lon") : 0;
         $data = (!empty($lat) && !empty($lon)) 
                             ? $this->repository->getByPosition($lat, $lon) 
-                            : "Record Not Found";
-        return $this->respond($data);
+                            : 'No data found';
+        return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
     }
 
     public function getByTimeInterval(): ResponseInterface
@@ -48,16 +47,20 @@ class VesselTrack extends ResourceController
         $endDate = $this->request->getVar("endDate") ? $this->request->getVar("endDate") : 0;
         $data = (!empty($startDate) && !empty($endDate)) 
                             ? $this->repository->getByTimeInterval($startDate, $endDate) 
-                            : "Record Not Found";
-        return $this->respond($data);
-
+                            : 'No Data found';;
+        return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
     }
 
     public function save(): ResponseInterface
     {
-        $model = new VesselTrackModel();
-        // $data['vesseltrack'] = $model->findAll();
-        $data = $model->findAll();
-        return $this->respond($data);
+        $data = $this->model->findAll();
+        $response = [
+            'status'   => 201,
+            'error'    => null,
+            'messages' => [
+                'success' => 'Data created successfully'
+            ]
+          ];
+        return $this->respond($response);
     }
 }
