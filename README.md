@@ -1,48 +1,6 @@
-# Vessels Tracks API
-
-Your task is to create a **RESTful API** that serves vessel tracks from a raw vessel positions data-source.
-The raw data is supplied as a JSON file that you must import to a database schema of your choice.
-
-Fields supplied are:
-* **mmsi**: unique vessel identifier
-* **status**: AIS vessel status
-* **station**: receiving station ID
-* **speed**: speed in knots x 10 (i.e. 10,1 knots is 101)
-* **lon**: longitude
-* **lat**: latitude
-* **course**: vessel's course over ground
-* **heading**: vessel's true heading
-* **rot**: vessel's rate of turn
-* **timestamp**: position timestamp
-
-**The API end-point must:**
-* Support the following filters: 
-  * **mmsi** (single or multiple)
-  * **latitude** and **longitude range**
-  * as well as **time interval**.
-* Log incoming requests to a datastore of  your choice (plain text, database, third party service etc.)
-* Limit requests per user to **10/hour**. (Use the request remote IP as a user identifier)
-* Support the following content types:
-  * At least two of the following: application/json, application/vnd.api+json, application/ld+json, application/hal+json
-  * application/xml
-  * text/csv
-
-**Share your work:**
-* Fork this repo and create a pull request that contains your implementation in a new branch named after you.
-
-
-**Notes:** 
-* Please include your Tests with your source code
-* Include instructions
-* Feel free to use the framework, libraries of your choice or plain PHP to implement the assignment
-
-**Have fun!**
-
-
-
 ## Tech Stack
 
-* Laravel
+* CodeIgniter4
 * Mysql
 * PHP
 
@@ -51,7 +9,7 @@ Fields supplied are:
 1. Clone the project.
 
 ```
-git clone https://github.com/infinitypaul/backend-assignment.git projectname
+git clone https://github.com/magnawealth/mt-backend-assignment.git projectname
 ```
 
 
@@ -61,7 +19,7 @@ git clone https://github.com/infinitypaul/backend-assignment.git projectname
 composer install 
 ```
 
-3. Migrate and seed the Database.
+3. Database Configuration.
 
 ```
 php artisan migrate --seed
@@ -70,7 +28,7 @@ php artisan migrate --seed
 4. Run php server.
 
 ```
-php artisan serve
+php spark serve
 ```
 
 
@@ -78,13 +36,13 @@ php artisan serve
 
 ### Base URL
 ```
-https://marinetask.herokuapp.com
+http://localhost:8080
 ```
 
 #### List All Record:
 
 ```
-https://marinetask.herokuapp.com/api/position
+http://localhost:8080/api/vesseltrack
 ```
 
 ## Filter Conditions
@@ -94,37 +52,64 @@ https://marinetask.herokuapp.com/api/position
 ##### Single MMSI
 
 ```phpregexp
-https://marinetask.herokuapp.com/api/position?mmsi=311040700
+http://localhost:8080/api/vesseltrack/filter?mmsi=247039300
 ```
 
 ##### Multiple MMSI
 
 ```phpregexp
-https://marinetask.herokuapp.com/api/position?mmsi=311040700,311486000
+http://localhost:8080/api/vesseltrack/filter?mmsi=311040700,247039300
 ```
 
 ### By Time Inverter
 
 ```phpregexp
-https://marinetask.herokuapp.com/api/position?time=2013-07-01T13:06:00,2013-07-01T10:06:00
+http://localhost:8080/api/vesseltrack/filter?startTime={startTime}&endTime={endTime}
+http://localhost:8080/api/vesseltrack/filter?startTime=2013-07-01T13:06:00&endTime=2013-07-01T10:06:00
 ```
 
 ### By Longitude And Latitude
 
 ```phpregexp
-https://marinetask.herokuapp.com/api/position?latlong={latitude},{longitude}
-https://marinetask.herokuapp.com/api/position?latlong=33.5577600,34.6411200
+http://localhost:8080/api/vesseltrack/filter?lat={latitude}&lon={longitude}
+http://localhost:8080/api/vesseltrack/filter?lat=33.5577600&lon=34.6411200
 ```
 
-it can also accept multiple filter condition
+You can also do
 
 ```phpregexp
-https://marinetask.herokuapp.com/api/position?latlong=33.5577600,34.6411200&time=2013-07-01T13:06:00,2013-07-01T10:06:00&mmsi=311040700,311486000&page=1
+http://localhost:8080/api/vesseltrack/filter?lon={longitude}&lat={latitude}
+http://localhost:8080/api/vesseltrack/filter?lon=34.6411200&lat=33.5577600
+```
+
+### Post JSON Data (in Request Body)
+
+You can post json data via request body with the accepted content types:
+* application/json
+* application/vnd.api+json
+* application/ld+json
+* application/hal+json
+* application/xml
+* text/csv
+
+```phpregexp
+http://localhost:8080/api/vesseltrack/postData
+```
+
+### Upload JSON Data (file.json)
+
+it  accepts only json files for upload with formats:
+* application/json
+* application/vnd.api+json
+* application/ld+json
+* application/hal+json
+* application/xml
+* text/csv
+
+```phpregexp
+http://localhost:8080/api/vesseltrack/uploadData
 ```
 
 
-
-And Viola, You have the response in front of you.
-
-Enjoy!!
+Enjoy!
 
