@@ -32,11 +32,11 @@ class VesselTrackRepository
         return $this->model->db->builder->where('lat', $lat)->findAll();
     }
 
-    public function getByTimeInterval($startDate, $endDate)
+    public function getByTimeInterval($startTime, $endTime)
     {
-        $startDate = strtotime($startDate);
-        $endDate = strtotime($endDate);
-        $sql = "BETWEEN `.$startDate.` AND `.$endDate`";
+        $startTime = strtotime($startTime);
+        $endTime = strtotime($endTime);
+        $sql = "BETWEEN `.$startTime.` AND `.$endTime`";
         // return $this->model->db->builder->where(new RawSql($sql))->findAll();
         return $this->model->where('timestamp', $sql)->findAll();
     }
