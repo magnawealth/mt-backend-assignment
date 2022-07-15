@@ -107,7 +107,7 @@ it  accepts only json files for upload with formats:
 * text/csv
 
 ```phpregexp
-http://localhost:8080/api/vesseltrack/uploadData
+http://localhost:8080/api/vesseltrack/uploadFile
 ```
 
 
