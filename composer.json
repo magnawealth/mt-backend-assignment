@@ -1,7 +1,7 @@
 {
-    "name": "codeigniter4/appstarter",
+    "name": "mt-backend-assignment",
     "type": "project",
-    "description": "CodeIgniter4 starter app",
+    "description": "A REST API using CodeIgniter4 starter app",
     "homepage": "https://codeigniter.com",
     "license": "MIT",
     "require": {

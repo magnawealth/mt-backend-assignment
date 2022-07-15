@@ -35,14 +35,10 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-// $routes->get('/', 'Home::index');
-// $routes->resource('vesseltrack');
-
-// $routes->match( ['get', 'post'], 'users/(:num)', 'users/$1');
-// $routes->get('api/vesseltrack?(:segment)', 'VesselTrack::index?$1');
-$routes->get('api/vesseltrack', 'VesselTrack::index');
+$routes->get('api/vesseltrack', 'VesselTrack::getAll');
+// $routes->get('api/vesseltrack/getAll', 'VesselTrack::getAll');
 $routes->get('api/vesseltrack/filter', 'VesselTrack::getByMMSI');
-$routes->post('api/vesseltrack', 'VesselTrack::save');
+$routes->post('api/vesseltrack/upload', 'VesselTrack::uploadJSON');
 
 /*
  * --------------------------------------------------------------------
