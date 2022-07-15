@@ -41,15 +41,13 @@ class VesselTrackRepository
         return $this->model->where('timestamp', $sql)->findAll();
     }
 
-    public function persist($data)
+    public function insert($data)
     {
-        return $this->model->insertBatch($data);
+        return $this->model->insert($data);
     }
 
-    public function uploadJson($model)
+    public function insertBatch($data)
     {
-        // TODO:
-        // Parse JSON file into database CodeIgniter4
-        // Parse JSON file into databasw PHP 
+        return $this->model->insertBatch($data); 
     }
 }
