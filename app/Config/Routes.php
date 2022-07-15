@@ -39,8 +39,8 @@ $routes->get('api/vesseltrack', 'VesselTrack::getAll');
 $routes->get('api/vesseltrack/filter?(:any)', 'VesselTrack::getByMMSI');
 $routes->get('api/vesseltrack/filter?(:any)', 'VesselTrack::getByPosition');
 $routes->get('api/vesseltrack/filter?(:any)', 'VesselTrack::getByTimeInterval');
-$routes->post('api/vesseltrack/postData', 'VesselTrack::postJsonData');
-$routes->post('api/vesseltrack/uploadFile', 'VesselTrack::uploadJsonFile');
+$routes->post('api/vesseltrack/postData', 'VesselTrack::postData');
+$routes->post('api/vesseltrack/uploadFile', 'VesselTrack::uploadFile');
 
 /*
  * --------------------------------------------------------------------
