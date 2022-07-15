@@ -38,7 +38,8 @@ $routes->set404Override();
 $routes->get('api/vesseltrack', 'VesselTrack::getAll');
 // $routes->get('api/vesseltrack/getAll', 'VesselTrack::getAll');
 $routes->get('api/vesseltrack/filter', 'VesselTrack::getByMMSI');
-$routes->post('api/vesseltrack/upload', 'VesselTrack::uploadJSON');
+$routes->post('api/vesseltrack/post', 'VesselTrack::postJsonData');
+$routes->post('api/vesseltrack/upload', 'VesselTrack::uploadJsonData');
 
 /*
  * --------------------------------------------------------------------

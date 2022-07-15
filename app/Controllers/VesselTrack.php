@@ -65,7 +65,56 @@ class VesselTrack extends ResourceController
         return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
     }
 
-    public function uploadJSON(): ResponseInterface
+    public function postJsonData(): ResponseInterface
+    {
+        $contentTypeArray = [
+            'application/json',
+            'application/ld+json',
+            'application/hal+json',
+            'application/vnd.api+json',
+            'application/xml',
+            'text/csv'
+        ];
+        // $getHeaders = $this->request->setHeader('Content-Type', $acceptedHeaders);
+
+        $csv = $this->request->setHeader('Content-Type', 'text/csv');
+        $xml = $this->request->setHeader('Content-Type', 'application/xml');
+        $json = $this->request->setHeader('Content-Type', 'application/json');
+        $ldJson = $this->request->setHeader('Content-Type', 'application/ld+json');
+        $halJson = $this->request->setHeader('Content-Type', 'application/hal+json');
+        $vndJson = $this->request->setHeader('Content-Type', 'application/vnd.api+json');
+
+        $reqJson = $this->request->getPost();
+        // $raw_input_stream = $this->input->input_stream;
+
+        // Returns the IP address for the current user. 
+        // If the IP address is not valid, the method will return ‘0.0.0.0’:
+        // $ip = $this->input->ip_address();
+
+        // Returns the user agent string (web browser) being used by the current user, 
+        // or NULL if it’s not available.
+
+        // $this->input->user_agent();
+
+        // $headers = $this->input->request_headers();
+
+
+        // $Data = json_decode(file_get_contents('php://input'), true);
+
+
+        // $jsonFile = $this->request->getPost("json");
+        // $upload[] = $this->repository->uploadJson($jsonFile);
+        // return ($upload === 'success') 
+        //                         ? $this->respondCreated('File upload successfully!') 
+        //                         : $this->failForbidden('Error Upload');
+
+        //If file != fileFormatArray
+        //return BadRequest('Format ')
+
+        return $this->respond($reqJson);
+    }
+
+    public function uploadJsonFile(): ResponseInterface
     {
         // $success = [
         //     'status'   => 201,
@@ -119,7 +168,7 @@ class VesselTrack extends ResourceController
         //                         : $this->failForbidden('Error Upload');
 
         //If file != fileFormatArray
-        //return BadRequest('File ')
+        //return BadRequest('Format ')
 
         return $this->respond($reqJson);
     }
