@@ -126,4 +126,4 @@ nb-configuration.xml
 /.phpunit.*.cache
 
 # Others
-mysql.txt
+README-default.md
