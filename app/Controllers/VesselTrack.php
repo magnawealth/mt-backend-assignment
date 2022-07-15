@@ -6,37 +6,25 @@ use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\HTTP\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Repository\VesselTrackRepository;
+use App\Services\VesselTrackService;
 
 class VesselTrack extends ResourceController
 {
     use ResponseTrait;
 
     protected $repository;
+    protected $vesselService;
 
     public function __construct() {
         $this->repository = new VesselTrackRepository();
+        $this->vesselService = new VesselTrackService();
     }
-
-    // Return setup view
-    // public function index()
-    // {
-    //     return view('index');
-    // }
 
     public function getAll(): ResponseInterface
     {
         $data = $this->repository->getAll();
         return ($data) ? $this->respond($data) : $this->failNotFound('No data found');
     }
-
-    // public function filter()
-    // {
-    //     $this->request->getVar("lat");
-    //     $this->request->getVar("lon");
-    //     $this->request->getVar("endDate");
-    //     $this->request->getVar("startDate");
-    //     $mmsi = $this->request->getVar("mmsi");
-    // }
     
     public function getByMMSI(): ResponseInterface
     {
@@ -57,109 +45,67 @@ class VesselTrack extends ResourceController
 
     public function getByTimeInterval(): ResponseInterface
     {
-        $startDate = $this->request->getVar("startDate") ? $this->request->getVar("startDate") : 0; 
-        $endDate = $this->request->getVar("endDate") ? $this->request->getVar("endDate") : 0;
-        $data = (!empty($startDate) && !empty($endDate)) 
-                            ? $this->repository->getByTimeInterval($startDate, $endDate) 
+        $startTime = $this->request->getVar("startTime") ? $this->request->getVar("startTime") : 0; 
+        $endTime = $this->request->getVar("endTime") ? $this->request->getVar("endTime") : 0;
+        $data = (!empty($startTime) && !empty($endTime)) 
+                            ? $this->repository->getByTimeInterval($startTime, $endTime) 
                             : 'No Data found';
         return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
     }
 
-    public function postJsonData(): ResponseInterface
+    public function postData(): ResponseInterface
     {
-        $contentTypeArray = [
-            'application/json',
-            'application/ld+json',
-            'application/hal+json',
-            'application/vnd.api+json',
-            'application/xml',
-            'text/csv'
-        ];
-        // $getHeaders = $this->request->setHeader('Content-Type', $acceptedHeaders);
+        // $getJSON = $this->request->getJSON();
+        // $type = $this->request->getHeaderLine('Content-Type');
+        // $isset = isset($getJSON);
+        // $request = $this->request;
+        // $getContentType = 'application/abc';
 
-        $csv = $this->request->setHeader('Content-Type', 'text/csv');
-        $xml = $this->request->setHeader('Content-Type', 'application/xml');
-        $json = $this->request->setHeader('Content-Type', 'application/json');
-        $ldJson = $this->request->setHeader('Content-Type', 'application/ld+json');
-        $halJson = $this->request->setHeader('Content-Type', 'application/hal+json');
-        $vndJson = $this->request->setHeader('Content-Type', 'application/vnd.api+json');
+        // Get json data and content type
+        $data = $this->request->getJSON();
+        $getContentType = $this->request->getHeaderLine('Content-Type');
 
-        $reqJson = $this->request->getPost();
-        // $raw_input_stream = $this->input->input_stream;
-
-        // Returns the IP address for the current user. 
-        // If the IP address is not valid, the method will return ‘0.0.0.0’:
-        // $ip = $this->input->ip_address();
-
-        // Returns the user agent string (web browser) being used by the current user, 
-        // or NULL if it’s not available.
-
-        // $this->input->user_agent();
-
-        // $headers = $this->input->request_headers();
-
-
-        // $Data = json_decode(file_get_contents('php://input'), true);
-
-
-        // $jsonFile = $this->request->getPost("json");
-        // $upload[] = $this->repository->uploadJson($jsonFile);
-        // return ($upload === 'success') 
-        //                         ? $this->respondCreated('File upload successfully!') 
-        //                         : $this->failForbidden('Error Upload');
-
-        //If file != fileFormatArray
-        //return BadRequest('Format ')
-
-        return $this->respond($reqJson);
+        //Process data if data & getContentType is not empty
+        return (isset($data) && !empty($getContentType)) 
+                    ? (($this->vesselService->isValidContentType($getContentType))
+                        ? $this->processPostData($data)
+                        : $this->failForbidden('Content type: ' . $getContentType . ' not supported!')) 
+                    : $this->failForbidden('Content type or body cannot be empty!'); 
     }
 
-    public function uploadJsonFile(): ResponseInterface
+    public function uploadFile(): ResponseInterface
     {
-        // $success = [
-        //     'status'   => 201,
-        //     'error'    => null,
-        //     'messages' => [
-        //         'success' => 'File upload successfully!'
-        //     ]
-        // ];
+        // Get uploaded file
+        // Save it in a folder
+        // Write through the data
+        // Persist data to database
 
-        //TODO: How to accept different upload format
+        $file = $this->request->getFile('file');
+        $fileMimeType = $file->getMimeType();
+        $readFile = $file->openFile();
+        // $readFile->
 
-        $fileFormatArray = [
-            'application/json',
-            'application/ld+json',
-            'application/hal+json',
-            'application/vnd.api+json',
-            'application/xml',
-            'text/csv'
+        // return (isset($file))  
+        //             ? (($this->vesselService->isValidContentType($fileMimeType))
+        //                 ? $this->processFileUpload($file)
+        //                 : $this->failForbidden('File mime type: ' . $fileMimeType . ' not supported!')) 
+        //             : $this->failForbidden('File field cannot be empty!');
+
+
+
+        $response = [
+            'file'   => $file,
+            'fileMimeType'   => $fileMimeType,
+            'readFile'   => [ $readFile ],
+            
+            'status'   => 201,
+            'error'    => null,
+            'messages' => [
+                'success' => 'File upload successfully!'
+            ]
         ];
-        // $getHeaders = $this->request->setHeader('Content-Type', $acceptedHeaders);
 
-        $csv = $this->request->setHeader('Content-Type', 'text/csv');
-        $xml = $this->request->setHeader('Content-Type', 'application/xml');
-        $json = $this->request->setHeader('Content-Type', 'application/json');
-        $ldJson = $this->request->setHeader('Content-Type', 'application/ld+json');
-        $halJson = $this->request->setHeader('Content-Type', 'application/hal+json');
-        $vndJson = $this->request->setHeader('Content-Type', 'application/vnd.api+json');
-
-        $reqJson = $this->request->getPost();
-        // $raw_input_stream = $this->input->input_stream;
-
-        // Returns the IP address for the current user. 
-        // If the IP address is not valid, the method will return ‘0.0.0.0’:
-        // $ip = $this->input->ip_address();
-
-        // Returns the user agent string (web browser) being used by the current user, 
-        // or NULL if it’s not available.
-
-        // $this->input->user_agent();
-
-        // $headers = $this->input->request_headers();
-
-
-        // $Data = json_decode(file_get_contents('php://input'), true);
-
+        return $this->respond($response);
 
         // $jsonFile = $this->request->getPost("json");
         // $upload[] = $this->repository->uploadJson($jsonFile);
@@ -170,6 +116,35 @@ class VesselTrack extends ResourceController
         //If file != fileFormatArray
         //return BadRequest('Format ')
 
-        return $this->respond($reqJson);
+    }
+
+    public function processPostData($data): ResponseInterface
+    {
+        return ($this->repository->persist($data)) 
+            ? $this->respondCreated('Data created successfully!')
+            : $this->failServerError('Error saving data. Please try again!');
+    }
+
+    public function processFileUpload($file): ResponseInterface
+    {
+        $uploadPath = "";
+        $parseToDatabase = "";
+
+        if($parseToDatabase === 'success') {
+            try {
+                $this->vesselService->saveFileUploadToPath($file, $uploadPath);
+            } catch (\Throwable $th) {
+                //throw $th; error saving file to DB.
+            }
+        } else {
+            //return error saving data to DB. Please try again
+        }
+
+        $data = "Success!";
+        return $this->respond($data);
+
+        // return ($this->repository->upload($file)) 
+        //     ? $this->respondCreated('Data created successfully!')
+        //     : $this->failServerError('Error saving data. Please try again!');
     }
 }
