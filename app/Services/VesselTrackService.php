@@ -15,15 +15,10 @@ class VesselTrackService
     
     public function isValidContentType($contentType)
     {
-        if ($contentType == "is found in contentTypeArray") {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return (in_array($contentType, $this->contentTypeArray)) ? true : false;
     }
 
-    public function saveFileUploadToPath($file, $uploadPath)
+    public function storeUploadFile($file, $uploadPath)
     {
         # code...
     }
