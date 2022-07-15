@@ -22,7 +22,7 @@ composer install
 3. Database Configuration.
 
 ```
-php artisan migrate --seed
+Copy and run mysql.txt in MySQL server to create table and seed data
 ```
 
 4. Run php server.
