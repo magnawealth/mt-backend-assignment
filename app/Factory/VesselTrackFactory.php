@@ -14,8 +14,13 @@ class VesselTrackFactory extends BaseController
 
     public function createArrayFromXml($filePath)
     {
+        // Read entire file into string
         $contents = file_get_contents($filePath);
-        return ((string) $contents !== '') ? json_decode($contents, true) : null ;
+        return 
+            ((string) $contents !== '') 
+                // Convert from xml string into an object, then json
+                ? (json_encode(simplexml_load_string($contents)) ? json_decode($contents, true) : null)
+                : null ;
     }
 
     public function createArrayFromCsv($filePath)
