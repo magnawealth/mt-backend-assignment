@@ -90,55 +90,37 @@ class VesselTrack extends ResourceController
                     ? (($this->vesselService->isValidContentType($fileMimeType))
                         //Check file validity
                         ? ((is_file($filePath)) 
-                            // Process upload by file content type
-                            ? $this->processUploadByFileContentType($filePath, $fileMimeType)
+                            // Process upload by file content type and return array or null
+                            ? ((is_array($this->processUploadByFileContentType($filePath, $fileMimeType)))
+                                ? $this->processDataFromFileUpload($this->processUploadByFileContentType($filePath, $fileMimeType))
+                                // if null -> return error creating array from Json file upload
+                                : $this->failForbidden('File content cannot be empty!'))
                             // if file is invalid, throw 404 error
                             : $this->failForbidden('Invalid File. Please try again!'))
                         // Return unsupported content type message
                         : $this->failForbidden('File mime type: ' . $fileMimeType . ' not supported!'))
                     : $this->failForbidden('File field cannot be empty!');
-
-        // $response = [
-        //     'array'   => $array,
-        //     'file'   => $file,
-            
-        //     'status'   => 201,
-        //     'error'    => null,
-        //     'messages' => [
-        //         'success' => 'File upload successfully!'
-        //     ]
-        // ];
-
-        // return $this->respond($response);
     }
 
-    public function processPostData($data): ResponseInterface
+    public function processPostData($postData): ResponseInterface
     {
-        return ($this->repository->insertBatch($data)) 
-            ? $this->respondCreated('Data created successfully!')
-            : $this->failServerError('Error saving data. Please try again!');
+        return (count($postData) > 1) 
+            ? (($this->repository->insertBatch($postData)) 
+                ? $this->respondCreated('Data created successfully!')
+                : $this->failServerError('Error saving data. Please try again!'))
+            : $this->repository->insert($postData);
     }
 
-    public function processFileUpload($filePath): ResponseInterface
+    public function processDataFromFileUpload($dataFromFile): ResponseInterface
     {
-        // TODO: 
-
-        // Create createArrayFromJson
-        return 
-            // if valid, create array from Json file upload
-            (is_array($this->vesselFactory->createArrayFromJson($filePath)))
-                    // insert array into database
-                ? (($this->repository->insertBatch($this->vesselFactory->createArrayFromJson($filePath)))
-                    // return success message if data is stored successful
-                    ? $this->respondCreated('Data created successfully!')
-                    // otherwise return error message 
-                    : $this->failServerError('Error saving data. Please try again!'))
-                // return error creating array from Json file upload
-                : $this->failForbidden('File content cannot be empty!');
-                
-        
-        // Create convertXmlToArray
-        
+        return (count($dataFromFile) > 1)
+            // insert array into database
+            ? (($this->repository->insertBatch($dataFromFile))
+                // return success message if data is stored successful
+                ? $this->respondCreated('Data created successfully!')
+                // otherwise return error message 
+                : $this->failServerError('Error saving data. Please try again!'))
+            : $this->repository->insert($dataFromFile);              
     }
 
     public function processUploadByFileContentType($filePath, $fileMimeType)
@@ -146,32 +128,21 @@ class VesselTrack extends ResourceController
         // TODO: 
         // Refator this method 
         
-        $array = [];
-
-        // if valid, create array from Json file upload
-        if (is_array($this->vesselFactory->createArrayFromJson($filePath))) {
-
+        switch ($fileMimeType) {
+            case 'application/json':
+                return $this->vesselFactory->createArrayFromJson($filePath);
+            case 'application/ld+json':
+                return $this->vesselFactory->createArrayFromJson($filePath);
+            case 'application/hal+json':
+                return $this->vesselFactory->createArrayFromJson($filePath);
+            case 'application/vnd.api+json':
+                return $this->vesselFactory->createArrayFromJson($filePath);
+            case 'application/xml':
+                return $this->vesselFactory->createArrayFromXml($filePath);
+            case 'text/csv':
+                return $this->vesselFactory->createArrayFromCsv($filePath);
+            default:
+                return null;
         }
-
-        if ($fileMimeType === 'application/json') {
-            $array = $this->vesselFactory->createArrayFromJson($filePath);
-        }
-        if ($fileMimeType === 'application/ld+json') {
-            $array = $this->vesselFactory->createArrayFromJson($filePath);
-        }
-        if ($fileMimeType === 'application/hal+json') {
-            $array = $this->vesselFactory->createArrayFromJson($filePath);
-        }
-        if ($fileMimeType === 'application/vnd.api+json') {
-            $array = $this->vesselFactory->createArrayFromJson($filePath);
-        }
-        if ($fileMimeType === 'application/xml') {
-            $array = $this->vesselFactory->createArrayFromXml($filePath);
-        }
-        if ($fileMimeType === 'text/csv') {
-            $array = $this->vesselFactory->createArrayFromCsv($filePath);
-        }
-
-        return $array;
     }
 }
