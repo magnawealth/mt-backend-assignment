@@ -14,7 +14,6 @@ class VesselTrackFactory extends BaseController
 
     public function createArrayFromXml($filePath)
     {
-        // Read entire file into string
         $contents = file_get_contents($filePath);
         return 
             ((string) $contents !== '') 
