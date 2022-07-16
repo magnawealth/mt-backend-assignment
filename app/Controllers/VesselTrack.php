@@ -2,11 +2,15 @@
 
 namespace App\Controllers;
 
+use App\Factory\VesselTrackFactory;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\HTTP\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Repository\VesselTrackRepository;
 use App\Services\VesselTrackService;
+use Config\Paths;
+
+use function PHPUnit\Framework\isNull;
 
 class VesselTrack extends ResourceController
 {
@@ -14,10 +18,12 @@ class VesselTrack extends ResourceController
 
     protected $repository;
     protected $vesselService;
+    protected $vesselTrackFactory;
 
     public function __construct() {
         $this->repository = new VesselTrackRepository();
         $this->vesselService = new VesselTrackService();
+        $this->vesselFactory = new VesselTrackFactory();
     }
 
     public function getAll(): ResponseInterface
@@ -55,12 +61,6 @@ class VesselTrack extends ResourceController
 
     public function postData(): ResponseInterface
     {
-        // $getJSON = $this->request->getJSON();
-        // $type = $this->request->getHeaderLine('Content-Type');
-        // $isset = isset($getJSON);
-        // $request = $this->request;
-        // $getContentType = 'application/abc';
-
         // Get json data and content type
         $data = $this->request->getJSON();
         $getContentType = $this->request->getHeaderLine('Content-Type');
@@ -75,76 +75,103 @@ class VesselTrack extends ResourceController
 
     public function uploadFile(): ResponseInterface
     {
-        // Get uploaded file
-        // Save it in a folder
-        // Write through the data
-        // Persist data to database
-
+        // Get File info
         $file = $this->request->getFile('file');
         $fileMimeType = $file->getMimeType();
-        $readFile = $file->openFile();
-        // $readFile->
 
-        // return (isset($file))  
-        //             ? (($this->vesselService->isValidContentType($fileMimeType))
-        //                 ? $this->processFileUpload($file)
-        //                 : $this->failForbidden('File mime type: ' . $fileMimeType . ' not supported!')) 
-        //             : $this->failForbidden('File field cannot be empty!');
+        // Save File in WritePath
+        $storePath = $file->store();
 
+        // Locate uploaded file
+        $filePath = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . str_replace('/', '\\', $storePath);
+           
+        return (isset($file))  
+                    // Check if content type is supported
+                    ? (($this->vesselService->isValidContentType($fileMimeType))
+                        //Check file validity
+                        ? ((is_file($filePath)) 
+                            // Process upload by file content type
+                            ? $this->processUploadByFileContentType($filePath, $fileMimeType)
+                            // if file is invalid, throw 404 error
+                            : $this->failForbidden('Invalid File. Please try again!'))
+                        // Return unsupported content type message
+                        : $this->failForbidden('File mime type: ' . $fileMimeType . ' not supported!'))
+                    : $this->failForbidden('File field cannot be empty!');
 
-
-        $response = [
-            'file'   => $file,
-            'fileMimeType'   => $fileMimeType,
-            'readFile'   => [ $readFile ],
+        // $response = [
+        //     'array'   => $array,
+        //     'file'   => $file,
             
-            'status'   => 201,
-            'error'    => null,
-            'messages' => [
-                'success' => 'File upload successfully!'
-            ]
-        ];
+        //     'status'   => 201,
+        //     'error'    => null,
+        //     'messages' => [
+        //         'success' => 'File upload successfully!'
+        //     ]
+        // ];
 
-        return $this->respond($response);
-
-        // $jsonFile = $this->request->getPost("json");
-        // $upload[] = $this->repository->uploadJson($jsonFile);
-        // return ($upload === 'success') 
-        //                         ? $this->respondCreated('File upload successfully!') 
-        //                         : $this->failForbidden('Error Upload');
-
-        //If file != fileFormatArray
-        //return BadRequest('Format ')
-
+        // return $this->respond($response);
     }
 
     public function processPostData($data): ResponseInterface
     {
-        return ($this->repository->persist($data)) 
+        return ($this->repository->insertBatch($data)) 
             ? $this->respondCreated('Data created successfully!')
             : $this->failServerError('Error saving data. Please try again!');
     }
 
-    public function processFileUpload($file): ResponseInterface
+    public function processFileUpload($filePath): ResponseInterface
     {
-        $uploadPath = "";
-        $parseToDatabase = "";
+        // TODO: 
 
-        if($parseToDatabase === 'success') {
-            try {
-                $this->vesselService->saveFileUploadToPath($file, $uploadPath);
-            } catch (\Throwable $th) {
-                //throw $th; error saving file to DB.
-            }
-        } else {
-            //return error saving data to DB. Please try again
+        // Create createArrayFromJson
+        return 
+            // if valid, create array from Json file upload
+            (is_array($this->vesselFactory->createArrayFromJson($filePath)))
+                    // insert array into database
+                ? (($this->repository->insertBatch($this->vesselFactory->createArrayFromJson($filePath)))
+                    // return success message if data is stored successful
+                    ? $this->respondCreated('Data created successfully!')
+                    // otherwise return error message 
+                    : $this->failServerError('Error saving data. Please try again!'))
+                // return error creating array from Json file upload
+                : $this->failForbidden('File content cannot be empty!');
+                
+        
+        // Create convertXmlToArray
+        
+    }
+
+    public function processUploadByFileContentType($filePath, $fileMimeType)
+    {
+        // TODO: 
+        // Refator this method 
+        
+        $array = [];
+
+        // if valid, create array from Json file upload
+        if (is_array($this->vesselFactory->createArrayFromJson($filePath))) {
+
         }
 
-        $data = "Success!";
-        return $this->respond($data);
+        if ($fileMimeType === 'application/json') {
+            $array = $this->vesselFactory->createArrayFromJson($filePath);
+        }
+        if ($fileMimeType === 'application/ld+json') {
+            $array = $this->vesselFactory->createArrayFromJson($filePath);
+        }
+        if ($fileMimeType === 'application/hal+json') {
+            $array = $this->vesselFactory->createArrayFromJson($filePath);
+        }
+        if ($fileMimeType === 'application/vnd.api+json') {
+            $array = $this->vesselFactory->createArrayFromJson($filePath);
+        }
+        if ($fileMimeType === 'application/xml') {
+            $array = $this->vesselFactory->createArrayFromXml($filePath);
+        }
+        if ($fileMimeType === 'text/csv') {
+            $array = $this->vesselFactory->createArrayFromCsv($filePath);
+        }
 
-        // return ($this->repository->upload($file)) 
-        //     ? $this->respondCreated('Data created successfully!')
-        //     : $this->failServerError('Error saving data. Please try again!');
+        return $array;
     }
 }
