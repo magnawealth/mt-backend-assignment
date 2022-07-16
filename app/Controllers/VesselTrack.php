@@ -26,23 +26,33 @@ class VesselTrack extends ResourceController
         $this->vesselFactory = new VesselTrackFactory();
     }
 
+    public function filter(): ResponseInterface
+    {
+        return 
+              ($this->request->getVar("mmsi")) 
+                    ? $this->getByMMSI($this->request->getVar("mmsi"))
+                    : (($this->request->getVar("lat") && $this->request->getVar("lon"))
+                        ? $this->getByPosition($this->request->getVar("lat"), $this->request->getVar("lon"))
+                        : (($this->request->getVar("startTime") && $this->request->getVar("endTime"))
+                            ? $this->getByTimeInterval($this->request->getVar("startTime"), $this->request->getVar("endTime"))
+                            : $this->failForbidden('Invalid query string/param !')));
+    }
+
     public function getAll(): ResponseInterface
     {
         $data = $this->repository->getAll();
         return ($data) ? $this->respond($data) : $this->failNotFound('No data found');
     }
     
-    public function getByMMSI(): ResponseInterface
+    public function getByMMSI($mmsi): ResponseInterface
     {
-        $mmsi = $this->request->getVar("mmsi") ? explode(',', $this->request->getVar("mmsi")) : 0;
+        $mmsi = explode(',', $mmsi);
         $data = (count($mmsi) >= 1) ? $this->repository->getByMMSI($mmsi) : 'No data found';
         return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
     }
 
-    public function getByPosition(): ResponseInterface
+    public function getByPosition($lat, $lon): ResponseInterface
     {
-        $lat = $this->request->getVar("lat") ? $this->request->getVar("lat") : 0; 
-        $lon = $this->request->getVar("lon") ? $this->request->getVar("lon") : 0;
         $data = (!empty($lat) && !empty($lon)) 
                             ? $this->repository->getByPosition($lat, $lon) 
                             : 'No data found';
@@ -51,8 +61,6 @@ class VesselTrack extends ResourceController
 
     public function getByTimeInterval(): ResponseInterface
     {
-        $startTime = $this->request->getVar("startTime") ? $this->request->getVar("startTime") : 0; 
-        $endTime = $this->request->getVar("endTime") ? $this->request->getVar("endTime") : 0;
         $data = (!empty($startTime) && !empty($endTime)) 
                             ? $this->repository->getByTimeInterval($startTime, $endTime) 
                             : 'No Data found';
