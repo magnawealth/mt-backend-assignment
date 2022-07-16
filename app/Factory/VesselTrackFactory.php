@@ -12,13 +12,13 @@ class VesselTrackFactory extends BaseController
         return ((string) $contents !== '') ? json_decode($contents, true) : null ;
     }
 
-    public function convertXmlToArray($filePath)
+    public function createArrayFromXml($filePath)
     {
         $contents = file_get_contents($filePath);
         return ((string) $contents !== '') ? json_decode($contents, true) : null ;
     }
 
-    public function convertCsvToArray($filePath)
+    public function createArrayFromCsv($filePath)
     {
         $contents = file_get_contents($filePath);
         return ((string) $contents !== '') ? json_decode($contents, true) : null ;
