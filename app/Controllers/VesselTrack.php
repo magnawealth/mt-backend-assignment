@@ -8,9 +8,6 @@ use CodeIgniter\HTTP\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Repository\VesselTrackRepository;
 use App\Services\VesselTrackService;
-use Config\Paths;
-
-use function PHPUnit\Framework\isNull;
 
 class VesselTrack extends ResourceController
 {
@@ -28,14 +25,18 @@ class VesselTrack extends ResourceController
 
     public function filter(): ResponseInterface
     {
+        $request = array_change_key_case($this->request->getVar(), CASE_LOWER);
+
         return 
-              ($this->request->getVar("mmsi")) 
-                    ? $this->getByMMSI($this->request->getVar("mmsi"))
-                    : (($this->request->getVar("lat") && $this->request->getVar("lon"))
-                        ? $this->getByPosition($this->request->getVar("lat"), $this->request->getVar("lon"))
-                        : (($this->request->getVar("startTime") && $this->request->getVar("endTime"))
-                            ? $this->getByTimeInterval($this->request->getVar("startTime"), $this->request->getVar("endTime"))
-                            : $this->failForbidden('Invalid query string/param !')));
+            (empty($request)) 
+                ? $this->failForbidden('Query string/param cannot be empty !')
+                : (! (empty($request['mmsi'])) 
+                    ? $this->getByMMSI($request['mmsi'])
+                    : ((! empty($request['lat']) && (! empty($request['lon'])))
+                        ? $this->getByPosition($request['lat'], $request['lon'])
+                        : ((! empty($request['starttime'])) && (! empty($request['endtime']))
+                            ? $this->getByTimeInterval($request['starttime'], $request['endtime'])
+                            : $this->failForbidden('Invalid query string/param !'))));
     }
 
     public function getAll(): ResponseInterface
