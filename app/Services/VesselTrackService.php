@@ -17,11 +17,5 @@ class VesselTrackService
     {
         return (in_array($contentType, $this->contentTypeArray)) ? true : false;
     }
-
-    public function storeUploadFile($file, $uploadPath)
-    {
-        # code...
-    }
-
     
 }
