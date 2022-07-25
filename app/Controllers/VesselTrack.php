@@ -101,7 +101,7 @@ class VesselTrack extends ResourceController
     {
         // Get File info
         $file = $this->request->getFile('file');
-        $fileMimeType = $file->getMimeType();
+        $fileMimeType = (!($file->getMimeType())) ? $file->getMimeType() : null ;
 
         // Save File in WritePath
         $storePath = $file->store();
@@ -137,6 +137,9 @@ class VesselTrack extends ResourceController
 
     public function processDataFromFileUpload($dataFromFile): ResponseInterface
     {
+
+        // return $this->respond($dataFromFile);
+
         return (count($dataFromFile) > 1)
             // insert array into database
             ? (($this->repository->insertBatch($dataFromFile))
@@ -150,7 +153,7 @@ class VesselTrack extends ResourceController
     public function processUploadByFileContentType($filePath, $fileMimeType)
     {
         // TODO: 
-        // Refator this method 
+        // Refactor this method 
         
         switch ($fileMimeType) {
             case 'application/json':
