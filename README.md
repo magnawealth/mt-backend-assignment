@@ -110,6 +110,8 @@ it  accepts only json files for upload with formats:
 http://localhost:8080/api/vesseltrack/uploadFile
 ```
 
+Samples 
+
 
 Enjoy!
 
