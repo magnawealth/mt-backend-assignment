@@ -69,20 +69,17 @@ class VesselTrack extends ResourceController
         log_message('info', 
             'request to get records with lat(' . $lat . ') and lon(' . $lon . ') started!');
 
-        $data = (!empty($lat) && !empty($lon)) 
-                            ? $this->repository->getByPosition($lat, $lon) 
-                            : 'No data found';
+        $data = $this->repository->getByPosition($lat, $lon);
         return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
     }
 
     public function getByTimeInterval($startTime, $endTime): ResponseInterface
     {
+        // Log request
         log_message('info', 
             'request to get records with startTime(' . $startTime . ') and endTime(' . $endTime . ') started!');
 
-        $data = (!empty($startTime) && !empty($endTime)) 
-                            ? $this->repository->getByTimeInterval($startTime, $endTime) 
-                            : 'No Data found';
+        $data = $this->repository->getByTimeInterval($startTime, $endTime);
         return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
     }
 

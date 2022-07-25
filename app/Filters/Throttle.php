@@ -23,7 +23,7 @@ class Throttle implements FilterInterface
 
         // Restrict an IP address to no more than 10 request
         // per hour across the entire site (for all incomming calls).
-        if ($throttler->check(md5($request->getIPAddress()), 10, HOUR) === false) {
+        if ($throttler->check(md5($request->getIPAddress()), 100000, HOUR) === false) {
             return Services::response()->setStatusCode(429);
         }
     }

@@ -25,20 +25,15 @@ class VesselTrackRepository
 
     public function getByPosition($lat, $lon)
     {
-        $sql = "id > 2 AND name != 'Accountant'";
-        // $this->db->where("tanggal BETWEEN $$first_date AND $second_date");
-
-        // $builder->where(new RawSql($sql));
-        return $this->model->db->builder->where('lat', $lat)->findAll();
+        $sql = '`lat` >= (' . $lat . ') AND `lon` < (' . $lon . ')';
+        return $this->model->where($sql)->findAll();
     }
 
     public function getByTimeInterval($startTime, $endTime)
     {
-        $startTime = strtotime($startTime);
-        $endTime = strtotime($endTime);
-        $sql = "BETWEEN `.$startTime.` AND `.$endTime`";
-        // return $this->model->db->builder->where(new RawSql($sql))->findAll();
-        return $this->model->where('timestamp', $sql)->findAll();
+        $sql = "`timestamp` >= UNIX_TIMESTAMP('" . $startTime;
+        $sql .= "') AND `timestamp` < UNIX_TIMESTAMP('" . $endTime . "')";
+        return $this->model->where($sql)->findAll();
     }
 
     public function insert($data)
