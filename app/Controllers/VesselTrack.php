@@ -15,7 +15,7 @@ class VesselTrack extends ResourceController
 
     protected $repository;
     protected $vesselService;
-    protected $vesselTrackFactory;
+    protected $vesselFactory;
 
     public function __construct() {
         $this->repository = new VesselTrackRepository();
@@ -25,7 +25,12 @@ class VesselTrack extends ResourceController
 
     public function filter(): ResponseInterface
     {
+        // Log request
+        log_message('info', 'request to filter records started!');
+        // Get request variables
         $request = array_change_key_case($this->request->getVar(), CASE_LOWER);
+        // Log request variables
+        log_message('info', 'request to filter records with => ' . json_encode($request));
 
         return 
             (empty($request)) 
@@ -41,12 +46,17 @@ class VesselTrack extends ResourceController
 
     public function getAll(): ResponseInterface
     {
-        $data = $this->repository->getAll();
-        return ($data) ? $this->respond($data) : $this->failNotFound('No data found');
+        log_message('info', 'request to get all records started!');
+        return ($this->repository->getAll()) 
+                    ? $this->respond($this->repository->getAll()) 
+                    : $this->failNotFound('No data found');
     }
     
     public function getByMMSI($mmsi): ResponseInterface
     {
+        // Log request
+        log_message('info', 'request to get records by mmsi(' .$mmsi. ') started!');
+
         $mmsi = explode(',', $mmsi);
         $data = (count($mmsi) >= 1) ? $this->repository->getByMMSI($mmsi) : 'No data found';
         return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
@@ -54,14 +64,21 @@ class VesselTrack extends ResourceController
 
     public function getByPosition($lat, $lon): ResponseInterface
     {
+        // Log request
+        log_message('info', 
+            'request to get records with lat(' . $lat . ') and lon(' . $lon . ') started!');
+
         $data = (!empty($lat) && !empty($lon)) 
                             ? $this->repository->getByPosition($lat, $lon) 
                             : 'No data found';
         return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
     }
 
-    public function getByTimeInterval(): ResponseInterface
+    public function getByTimeInterval($startTime, $endTime): ResponseInterface
     {
+        log_message('info', 
+            'request to get records with startTime(' . $startTime . ') and endTime(' . $endTime . ') started!');
+
         $data = (!empty($startTime) && !empty($endTime)) 
                             ? $this->repository->getByTimeInterval($startTime, $endTime) 
                             : 'No Data found';

@@ -2,6 +2,7 @@
 
 namespace Config;
 
+use App\Filters\Logger;
 use App\Filters\Throttle;
 use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\Honeypot;
@@ -19,6 +20,7 @@ class Filters extends BaseConfig
      * @var array
      */
     public $aliases = [
+        'logger'        => Logger::class,
         'throttle'      => Throttle::class,
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
@@ -35,11 +37,13 @@ class Filters extends BaseConfig
      */
     public $globals = [
         'before' => [
+            'logger',
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
         ],
         'after' => [
+            'logger',
             'toolbar',
             // 'honeypot',
             // 'secureheaders',

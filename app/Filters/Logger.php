@@ -6,12 +6,13 @@ use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
+use CodeIgniter\HTTP\ResponseTrait;
 
-class Throttle implements FilterInterface
+class Logger implements FilterInterface
 {
+    use ResponseTrait;
     /**
-     * This is a demo implementation of using the Throttler class
-     * to implement rate limiting for your application.
+     * This is the implementation of logging for the application.
      *
      * @param array|null $arguments
      *
@@ -19,13 +20,8 @@ class Throttle implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        $throttler = Services::throttler();
-
-        // Restrict an IP address to no more than 10 request
-        // per hour across the entire site (for all incomming calls).
-        if ($throttler->check(md5($request->getIPAddress()), 1000, HOUR) === false) {
-            return Services::response()->setStatusCode(429);
-        }
+        // Log IP Address
+        log_message('info', 'Request from IP:{ip}', ['ip' => $request->getIPAddress()]);
     }
 
     /**
@@ -37,6 +33,9 @@ class Throttle implements FilterInterface
      */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // ...
+        // Return controller method response
+        $statusCode = Services::response()->getStatusCode();
+        $statusMessage = Services::response()->getReasonPhrase();
+        log_message('info', $statusCode . ': ' . $statusMessage);
     }
 }

@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "type": "array",
+    "items": {
+        "$ref": "#/definitions/Welcome7Element"
+    },
+    "definitions": {
+        "Welcome7Element": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "mmsi": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "stationId": {
+                    "type": "integer"
+                },
+                "speed": {
+                    "type": "integer"
+                },
+                "lon": {
+                    "type": "number"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "course": {
+                    "type": "integer"
+                },
+                "heading": {
+                    "type": "integer"
+                },
+                "rot": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "course",
+                "heading",
+                "lat",
+                "lon",
+                "mmsi",
+                "rot",
+                "speed",
+                "stationId",
+                "status",
+                "timestamp"
+            ],
+            "title": "Welcome7Element"
+        }
+    }
+}
