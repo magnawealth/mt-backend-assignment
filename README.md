@@ -22,7 +22,7 @@ composer install
 3. Database Configuration.
 
 ```
-Copy and run mysql.txt in MySQL server to create table and seed data
+Copy and run mysql.txt in MySQL server to create table and seed data in phpMyAdmin
 ```
 
 4. Run php server.
@@ -75,7 +75,7 @@ http://localhost:8080/api/vesseltrack/filter?lat={latitude}&lon={longitude}
 http://localhost:8080/api/vesseltrack/filter?lat=33.5577600&lon=34.6411200
 ```
 
-You can also do
+* You can also do
 
 ```phpregexp
 http://localhost:8080/api/vesseltrack/filter?lon={longitude}&lat={latitude}
@@ -110,7 +110,13 @@ it  accepts only json files for upload with formats:
 http://localhost:8080/api/vesseltrack/uploadFile
 ```
 
-Samples 
+### Sample Upload Files & Logger Location
+
+Samples upload files can be found in 
+* writable\data
+
+While the log document file(s) can be found in 
+* writable\logs
 
 
 Enjoy!
