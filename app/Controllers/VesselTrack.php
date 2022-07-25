@@ -55,11 +55,12 @@ class VesselTrack extends ResourceController
     public function getByMMSI($mmsi): ResponseInterface
     {
         // Log request
-        log_message('info', 'request to get records by mmsi(' .$mmsi. ') started!');
+        log_message('info', 'request to filter records with => ' . json_encode($mmsi));
 
         $mmsi = explode(',', $mmsi);
-        $data = (count($mmsi) >= 1) ? $this->repository->getByMMSI($mmsi) : 'No data found';
-        return (count($data) >= 1) ? $this->respond($data) : $this->failNotFound('No data found');
+        return (count($mmsi) >= 1) 
+                            ? $this->respond($this->repository->getByMMSI($mmsi)) 
+                            : $this->failForbidden('Content type or body cannot be empty!');
     }
 
     public function getByPosition($lat, $lon): ResponseInterface
